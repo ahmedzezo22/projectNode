@@ -42,11 +42,6 @@ const userSchema = new mongoose.Schema({
 },
     { timestamps: true }
 )
-// userSchema.virtual('tasks',{
-//     ref:'Task',
-//     localField: '_id',
-//     foreignField: 'owner'
-// })
 userSchema.methods.toJSON = function(){
     const user = this.toObject()
     delete user.password
@@ -60,7 +55,7 @@ userSchema.methods.generateToken = async function(){
     await user.save()
     return token
 }
-userSchema.statics.findByCredentials = async(email, password, type) => {
+userSchema.statics.findByCredentials = async(email, password,type) => {
     const user = await User.findOne({email})
     if(!user) throw new Error('unable login')
     if(user.type!= type) throw new Error('unable login')
@@ -73,10 +68,6 @@ userSchema.pre('save', async function(next){
     if(user.isModified('password')) user.password = await bcrypt.hash(user.password, 8)
     next()
 })
-// userSchema.pre('remove', async function(next){
-//     const user = this
-//     await Task.deleteMany({owner:user._id})
-//     next()
-// })
+
 const User = mongoose.model('User',userSchema)
 module.exports = User

@@ -4,22 +4,21 @@ const router = new express.Router()
 const auth = require('../middleware/auth')
 //const multer = require('multer')
 //create user 
-router.post('/users', async (req,res)=>{
-    const user = new User(req.body)
+router.post('/users',async(req,res)=>{
     try{
+        const user = new User(req.body)
         await user.save()
         const token = await user.generateToken()
-        res.status(200).send({
+        res.send({
             status:1,
-            data: { user , token },
-            message: "user inserted"
+            data:{user,token,token_type:'bearer '},
+            message: "thanks for register"
         })
-    }
-    catch(e){
+    }catch(e){
         res.status(200).send({
             status:0, 
             data: e,
-            message: "error inserting data"
+            message: "error inserting your data please try again username or email may be exit"
         })
     }
 })
@@ -45,23 +44,23 @@ router.get('/users/getAll',auth,async(req,res)=>{
     }
 })
 // login user
-router.post('/users/login', async (req, res) => {
+router.post('/users/login',async (req, res) => {
     try{
-        const type = req.body.type
-        if(!type) throw new Error('add user role')
-        const user = await User.findByCredentials(req.body.email, req.body.password, req.body.type)
+     const type = req.body.type
+    if(!type) throw new Error('add user role')
+        const user = await User.findByCredentials(req.body.email, req.body.password,req.body.type)
         const token = await user.generateToken()
-        res.send({
+        res.status(200).send({
             status: 1,
-            data: {user, token, token_type:'bearer '},
-            message: " user logged in"
+            data: {user,token,token_type:'bearer'},
+            message: " thanks for login "
         })
     }
     catch(e){
         res.status(200).send({
             status: 0,
             data: e,
-            message: "Unauthorized user"
+            message: "you are not authorized please register or insert right data"
         })
     }
 })
